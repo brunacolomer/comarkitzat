@@ -1,0 +1,18 @@
+{
+    "tarragona": {
+        "friend": "#FF5733",
+        "unfriend": "white"
+    },
+    "lleida": {
+        "friend": "#FF0000",
+        "unfriend": "white"
+    },
+    "girona": {
+        "friend": "#67B770",
+        "unfriend": "white"
+    },
+    "barcelona": {
+        "friend": "#CA93FF",
+        "unfriend": "white"
+    }
+}
