@@ -1,41 +1,48 @@
 import { Text, View, TouchableWithoutFeedback, TouchableOpacity, Alert, Modal, Pressable, StyleSheet, TextInput } from "react-native";
-import  SvgProvinciasDeCatalunya  from "../components/Provincies";
 import SvgAppleLogo from "../components/Apple";
-import React, { useState } from "react";
-import Colors from "../constants/RegionColors.json"
+import React, { useMemo, useState } from "react";
+import Colors from "../constants/Colors"
+import Texts from "../constants/Texts"
 
 export default function Index() {
   const [text, onChangeText] = useState('Jaume Mellat');
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState('');
-  console.log(Colors.barcelona.unfriend)
-  const [color, setColor] = useState('blue');
-  const [pathColors, setPathColors] = useState({
-    tarragona: Colors.tarragona.unfriend,
-    lleida: Colors.lleida.unfriend,
-    girona: Colors.girona.unfriend,
-    barcelona: Colors.barcelona.unfriend,
-  });
-  const [friendText, setFriendText] = useState('');
+  const generateInitialPathColors = () => {
+    const initialPathColors: { [key: string]: string } = {};
+    Object.keys(Colors).forEach((key) => {
+      if (Colors[key]?.unfriend) {
+        initialPathColors[key] = Colors[key].unfriend;
+      }
+    });
+    return initialPathColors;
+  };
 
-  const [friends,setFriends] = useState({
-    tarragona: '',
-    lleida: '',
-    girona: '',
-    barcelona: '',
-  });
+  const generateInitialFriendsNames = () => {
+    const initialFriendsNames: { [key: string]: string } = {};
+    Object.keys(Texts).forEach((key) => {
+      if (Texts[key]) {
+        initialFriendsNames[key] = "";
+      }
+    });
+    return initialFriendsNames;
+  };
+
+  const [pathColors, setPathColors] = useState(generateInitialPathColors);
+
+  const [friends, setFriends] = useState(generateInitialFriendsNames);
 
   const [selectedPathName, setSelectedPathName] = useState('');
 
+  console.log('colors', Colors);
   const handlePathPress = (pathName: string) => {
-    setModalText(pathName);
+    setModalText(Texts[pathName]);
     onChangeText(friends[pathName] || 'Jaume Mellat');
     setSelectedPathName(pathName);
     setModalVisible(true);
     console.log(`Presed ${pathName}`);
-    // Handle path-specific logic here
-
   }
+
   const removeFriendship = () => {
     const pathName = selectedPathName;
     setModalVisible(!modalVisible);
@@ -65,6 +72,12 @@ export default function Index() {
       },
     }));
   }
+  const addEditText = useMemo(() => {
+    console.log('addEditText');
+    console.log(friends[selectedPathName]);
+    return friends[selectedPathName] === '' ? Texts.addFriendShipText : Texts.editFriendShipText;
+  }, [friends, selectedPathName]);
+
 
   console.log('rendering');
   return (
@@ -89,16 +102,22 @@ export default function Index() {
         onChangeText={onChangeText}
         value={text}
       />
-            <Pressable
+      <View style={{flexDirection: 'row'}}>
+            
+            {friends[selectedPathName] !== '' && (
+                <Pressable
+                  style={[styles.button, styles.buttonDelete]}
+                  onPress={removeFriendship}>
+                  <Text style={styles.textStyle}>{Texts.removeFriendShipText}</Text>
+                </Pressable>
+              )}
+              <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={addFriendship}>
-              <Text style={styles.textStyle}>Afegir amistat</Text>
+              <Text style={styles.textStyle}>{addEditText}</Text>
             </Pressable>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={removeFriendship}>
-              <Text style={styles.textStyle}>Afegir enemic</Text>
-            </Pressable>
+            </View>
+            <View/>
           </View>
         </View>
       </Modal>
@@ -117,7 +136,7 @@ const styles = StyleSheet.create({
     margin: 20,
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
+    padding: 15,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -132,9 +151,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2,
+    margin: 5,
   },
   buttonOpen: {
     backgroundColor: '#F194FF',
+  },
+  buttonDelete: {
+    backgroundColor: '#f00',
   },
   buttonClose: {
     backgroundColor: '#2196F3',
