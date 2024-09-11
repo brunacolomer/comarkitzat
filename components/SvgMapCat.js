@@ -1,10 +1,8 @@
 import * as React from "react";
-import { Dimensions } from "react-native";
 import Svg, { Path, G, Rect, Polygon } from "react-native-svg";
-import mapData from "./../constants/MapaPaths.json";
-import mapDataComarques from "./../constants/MapaPathsComarques.json";
+import mapDataComarques from "../constants/MapaPathsComarques.json";
 
-const SvgAppleLogo = ({ pathColors, onPathPress }) => {
+const MapCat = ({ pathColors, onPathPress }) => {
 
   return (
     <Svg
@@ -16,7 +14,7 @@ const SvgAppleLogo = ({ pathColors, onPathPress }) => {
     <Path
       key={region}
       d={mapDataComarques[region].d}
-      fill={pathColors[region] || "blue"} // Color based on state
+      fill={pathColors[region] || "white"} // Color based on state
       stroke="black" // Outline color for the path
       strokeWidth="1" // Outline width for the path
       onPress={() => onPathPress(region)}
@@ -25,7 +23,7 @@ const SvgAppleLogo = ({ pathColors, onPathPress }) => {
     <Polygon
       key={region}
       points={mapDataComarques[region].points}
-      fill={pathColors[region] || "blue"} // Color based on state
+      fill={pathColors[region] || "white"} // Color based on state
       stroke="black" // Outline color for the path
       strokeWidth="1" // Outline width for the path
       onPress={() => onPathPress(region)}
@@ -38,4 +36,4 @@ const SvgAppleLogo = ({ pathColors, onPathPress }) => {
   );
 };
 
-export default SvgAppleLogo;
+export default MapCat;
