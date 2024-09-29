@@ -1,19 +1,16 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useCallback, thrott} from 'react';
 import { View, Modal, Pressable, StyleSheet, Text, TextInput, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import MapCat from '../components/SvgMapCat';
 import { usePathColors, useFriends, useModal } from '../hooks/useCustomHooks';
 import Colors from '../constants/Colors';
 import Texts from '../constants/Texts';
-import PlayRoom from '../components/SvgPlayRoom';
-import ArrowControls from '../components/Arrows';
-import { PanResponder } from 'react-native';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 
 
 export default function App() {
   const [viewBox, setViewBox] = useState({ minX: 0, minY: 0, width: 500, height: 500 });
   const pan = useRef({ x: 0, y: 0 }).current;
+  const [_, forceUpdate] = React.useState(false);
   const [alert, setAlert] = React.useState(false);
   const [friends, setFriends] = useFriends();
   const [width, setWidth] = React.useState(800);
@@ -21,13 +18,6 @@ export default function App() {
   const minX = useRef(-30);
   const minY = useRef(-30);
 
-  const handlePan = (event) => {
-    const { translationX, translationY } = event.nativeEvent;
-
-    // Actualitzar el referent
-    minX.current -= translationX / 20;
-    minY.current -= translationY / 20;
-  };
 
 
 
@@ -76,32 +66,9 @@ export default function App() {
   const addEditText = !(selectedPathName in friends) || friends[selectedPathName] === ''
     ? Texts.addFriendShipText
     : Texts.editFriendShipText;
-
-
-  const handleSVGMove = (direction:string) => {
-    console.log('Direction:', direction);
-  
-    switch (direction) {
-      case 'up':
-        setMinY(minY + 10);
-        break;
-      case 'down':
-        setMinY(minY - 10);
-        break;
-      case 'left':
-        setMinX(minX + 10);
-        break;
-      case 'right':
-        setMinX(minX - 10);
-        break;
-      default:
-        break;
-    }
-    };
     
 
   return (
-    <PanGestureHandler onGestureEvent={handlePan}>
     <View style={styles.container}>
       <Modal
         transparent={true}
@@ -133,12 +100,8 @@ export default function App() {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      <MapCat onPathPress={handlePathPress} pathColors={pathColors} minY={minY} minX={minX} height={height} width={width}/>
-      <View style={styles.arrowContainer}>
-        <ArrowControls onArrowPress={handleSVGMove}/>
-      </View>
+      <MapCat onPathPress={handlePathPress} pathColors={pathColors}/>
     </View>
-    </PanGestureHandler>
   );
 }
 
